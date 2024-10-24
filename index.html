@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    #messages {
+      border: 1px solid #ddd;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    input {
+      padding: 5px;
+      font-size: 14px;
+    }
+    button {
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>WebSocket Chat</h2>
+  
+  <div id="messages">
+    <!-- Messages will appear here -->
+  </div>
+
+  <input type="text" id="messageInput" placeholder="Enter your message" />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    // Create WebSocket connection
+    const ws = new WebSocket('ws://localhost:3000');
+
+    // Access the message display area
+    const messageDisplay = document.getElementById('messages');
+
+    // Function to add a message to the display
+    function displayMessage(message) {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messageDisplay.appendChild(messageElement);
+      messageDisplay.scrollTop = messageDisplay.scrollHeight; // Scroll to the bottom
+    }
+
+    // WebSocket events
+    ws.onopen = function() {
+      displayMessage('Connected to WebSocket server');
+    };
+
+    ws.onmessage = function(event) {
+      displayMessage('Received: ' + event.data); // Display received message
+    };
+
+    ws.onclose = function() {
+      displayMessage('Disconnected from WebSocket server');
+    };
+
+    ws.onerror = function(error) {
+      displayMessage('Error: ' + error.message);
+    };
+
+    // Send message to WebSocket server
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value;
+      
+      if (message) {
+        ws.send(message); // Send message to server
+        displayMessage('Sent: ' + message); // Display the sent message
+        input.value = ''; // Clear the input field
+      }
+    }
+  </script>
+
+</body>
+</html>
